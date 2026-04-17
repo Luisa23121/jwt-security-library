@@ -29,25 +29,24 @@ public class JwtValidationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+        String tokenFinal = token;
 
         try {
-            String tokenFinal = token;
-
-            // Si debería refrescar antes o ya expiró
+            // ¿Necesita refresh?
             if (jwtService.shouldRefreshBeforeExpiry(token) || !jwtService.isValidToken(token)) {
                 tokenFinal = jwtService.refreshToken(token);
                 response.setHeader("Authorization", "Bearer " + tokenFinal);
             }
 
-            // Extraer datos
+            // Extraer datos (como UUID)
             UUID userId = jwtService.extractUserId(tokenFinal);
             String userName = jwtService.extractUserName(tokenFinal);
-            String rolId = jwtService.extractRolId(tokenFinal);
+            UUID rolId = jwtService.extractRolId(tokenFinal);
 
-            // Guardar en request
-            request.setAttribute("userId", userId);
+            // Guardar en request como String para evitar problemas de tipo
+            request.setAttribute("userId", userId.toString());
             request.setAttribute("userName", userName);
-            request.setAttribute("rolId", rolId);
+            request.setAttribute("rolId", rolId.toString());
 
             chain.doFilter(request, response);
 
