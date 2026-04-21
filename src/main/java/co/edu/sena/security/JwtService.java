@@ -123,4 +123,8 @@ public class JwtService {
         }
         return authorizationHeader.substring(7);
     }
+
+    public long getExpirationMs() {
+        return expirationMs;
+    }
 }

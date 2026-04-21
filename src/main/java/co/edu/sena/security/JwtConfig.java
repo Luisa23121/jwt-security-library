@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JwtConfig {
 
-    @Value("${jwt.secret}")
+    @Value("${custom.security.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
+    @Value("${custom.security.expiration-ms}")
     private long expiration;
 
-    @Value("${jwt.refresh-threshold:60000}")
+    @Value("${custom.security.refresh-threshold-ms:60000}")
     private long refreshThreshold;
 
     @Bean
