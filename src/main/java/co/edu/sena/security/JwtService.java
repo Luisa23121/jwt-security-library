@@ -28,6 +28,7 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId.toString());
         claims.put("rolId", rolId.toString());
+        claims.put("nombreRol", rolId.toString());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -73,6 +74,10 @@ public class JwtService {
 
     public Date extractExpiration(String token) {
         return getClaims(token).getExpiration();
+    }
+
+    public String extractNombreRol(String token) {
+        return getClaims(token).get("nombreRol", String.class);
     }
 
     // Refresh: ¿debería renovar antes de expirar?

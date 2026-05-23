@@ -3,7 +3,7 @@ package co.edu.sena.security.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import co.edu.sena.security.interceptor.RolInterceptor;
+import co.edu.sena.security.interceptor.RoleInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Configuration
 public class WebConfig implements WebMvcConfigurer{
-    private final RolInterceptor rolInterceptor;
+    private final RoleInterceptor rolInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
