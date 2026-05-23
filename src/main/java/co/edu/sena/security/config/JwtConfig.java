@@ -1,5 +1,6 @@
-package co.edu.sena.security;
+package co.edu.sena.security.config;
 
+import co.edu.sena.security.JwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
