@@ -14,7 +14,7 @@ public class JwtService {
     private final Key signingKey;
     private final long expirationMs;
     private final long refreshThresholdMs;
-    private static final long MAX_REFRESH_WINDOW_MS = 24 * 60 * 60 * 1000; // 24h
+    private static final long MAX_REFRESH_WINDOW_MS = 24 * 60 * 60 * 1000;
 
     public JwtService(String base64Secret, long expirationMs, long refreshThresholdMs) {
         byte[] bytes = Base64.getDecoder().decode(base64Secret);
@@ -23,12 +23,11 @@ public class JwtService {
         this.refreshThresholdMs = refreshThresholdMs;
     }
 
-    // Generar token con UUIDs
-    public String generateToken(UUID userId, UUID rolId, String userName) {
+    public String generateToken(UUID userId, UUID rolId, String userName, String nombreRol) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId.toString());
         claims.put("rolId", rolId.toString());
-        claims.put("nombreRol", rolId.toString());
+        claims.put("nombreRol", nombreRol);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -39,7 +38,6 @@ public class JwtService {
                 .compact();
     }
 
-    // Validar token
     public boolean isValidToken(String token) {
         try {
             getClaims(token);
@@ -49,7 +47,6 @@ public class JwtService {
         }
     }
 
-    // Obtener claims (lanza excepción si expiró o firma inválida)
     private Claims getClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(signingKey)
@@ -57,7 +54,6 @@ public class JwtService {
                 .getBody();
     }
 
-    // Extractores con UUID
     public String extractUserName(String token) {
         return getClaims(token).getSubject();
     }
@@ -72,43 +68,42 @@ public class JwtService {
         return UUID.fromString(id);
     }
 
-    public Date extractExpiration(String token) {
-        return getClaims(token).getExpiration();
-    }
-
     public String extractNombreRol(String token) {
         return getClaims(token).get("nombreRol", String.class);
     }
 
-    // Refresh: ¿debería renovar antes de expirar?
+    public Date extractExpiration(String token) {
+        return getClaims(token).getExpiration();
+    }
+
     public boolean shouldRefreshBeforeExpiry(String token) {
         try {
             long remaining = extractExpiration(token).getTime() - System.currentTimeMillis();
             return remaining < refreshThresholdMs;
         } catch (ExpiredJwtException e) {
-            return true; // ya expiró, también necesita refresh
+            return true;
         } catch (JwtException e) {
             return false;
         }
     }
 
-    // Renovar token (maneja tokens expirados recientemente)
     public String refreshToken(String token) {
         UUID userId;
         UUID rolId;
         String userName;
+        String nombreRol;
 
         try {
-            // Caso normal: token aún vigente
             userId = extractUserId(token);
             rolId = extractRolId(token);
             userName = extractUserName(token);
+            nombreRol = extractNombreRol(token);
         } catch (ExpiredJwtException e) {
-            // Token expirado pero firma válida
             Claims claims = e.getClaims();
             userId = UUID.fromString(claims.get("userId", String.class));
             rolId = UUID.fromString(claims.get("rolId", String.class));
             userName = claims.getSubject();
+            nombreRol = claims.get("nombreRol", String.class);
 
             long expiredSinceMs = System.currentTimeMillis() - claims.getExpiration().getTime();
             if (expiredSinceMs > MAX_REFRESH_WINDOW_MS) {
@@ -118,10 +113,9 @@ public class JwtService {
             throw new RuntimeException("Token inválido. No se puede renovar.");
         }
 
-        return generateToken(userId, rolId, userName);
+        return generateToken(userId, rolId, userName, nombreRol);
     }
 
-    // Utilidad para extraer token del header
     public String extractBearer(String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Authorization header inválido");
