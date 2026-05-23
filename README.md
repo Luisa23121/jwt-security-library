@@ -25,4 +25,4 @@ Incluye funcionalidades para autenticación mediante JWT, validación de tokens 
 
 ## Estado del proyecto
 
-En desarrollo y mejora continua.
+En desarrollo y mejora continua..
