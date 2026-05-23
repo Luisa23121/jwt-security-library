@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import co.edu.sena.security.enums.RolEnum;
 
 // Define donde se puede usar la anotación
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 // RUNTIME: disponible en ejecución
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequireRole {

@@ -42,11 +42,13 @@ public class JwtValidationFilter extends OncePerRequestFilter {
             UUID userId = jwtService.extractUserId(tokenFinal);
             String userName = jwtService.extractUserName(tokenFinal);
             UUID rolId = jwtService.extractRolId(tokenFinal);
+            String nombreRol = jwtService.extractNombreRol(tokenFinal);
 
             // Guardar en request como String para evitar problemas de tipo
             request.setAttribute("userId", userId.toString());
             request.setAttribute("userName", userName);
             request.setAttribute("rolId", rolId.toString());
+            request.setAttribute("nombreRol", nombreRol);
 
             chain.doFilter(request, response);
 
