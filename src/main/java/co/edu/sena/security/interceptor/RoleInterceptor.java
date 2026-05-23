@@ -27,6 +27,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 
         // Lee el nombre del rol que guardó la librería
         Object rol = request.getAttribute("nombreRol");
+        System.out.println(">>> nombreRol: " + rol);
 
         if (!(rol instanceof String nombreRol)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
